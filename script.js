@@ -1,6 +1,8 @@
 const root = document.documentElement;
 const themeToggle = document.querySelector("[data-theme-toggle]");
 const themeIcon = document.querySelector("[data-theme-icon]");
+const themeQuery = window.matchMedia("(prefers-color-scheme: light)");
+const navLinks = Array.from(document.querySelectorAll(".nav a[href^='#']"));
 const bookmarkletLinks = Array.from(document.querySelectorAll("[data-bookmarklet-link]"));
 const copyBookmarkletButton = document.querySelector("[data-copy-bookmarklet]");
 const bookmarkletStatus = document.querySelector("[data-bookmarklet-status]");
@@ -24,8 +26,12 @@ const storedTheme = storage.get();
 const bookmarkletSourceUrl = "https://raw.githubusercontent.com/01max/standup_tracker/main/standup-companion.bookmarklet.js";
 let bookmarkletUrl = "";
 
+function systemTheme() {
+  return themeQuery.matches ? "light" : "dark";
+}
+
 function applyTheme(theme, persist = true) {
-  const nextTheme = theme === "light" ? "light" : "dark";
+  const nextTheme = theme === "light" || theme === "dark" ? theme : systemTheme();
   root.dataset.theme = nextTheme;
   root.style.colorScheme = nextTheme;
 
@@ -41,6 +47,21 @@ function applyTheme(theme, persist = true) {
 
   if (persist) {
     storage.set(nextTheme);
+  }
+}
+
+function updateActiveNav() {
+  const currentHash = window.location.hash;
+
+  for (const link of navLinks) {
+    const isActive = Boolean(currentHash) && link.getAttribute("href") === currentHash;
+    link.classList.toggle("active", isActive);
+
+    if (isActive) {
+      link.setAttribute("aria-current", "true");
+    } else {
+      link.removeAttribute("aria-current");
+    }
   }
 }
 
@@ -76,11 +97,20 @@ async function loadBookmarklet() {
   }
 }
 
-applyTheme(storedTheme, false);
+applyTheme(storedTheme || systemTheme(), false);
+updateActiveNav();
 
 themeToggle?.addEventListener("click", () => {
   applyTheme(root.dataset.theme === "dark" ? "light" : "dark");
 });
+
+themeQuery.addEventListener("change", () => {
+  if (!storage.get()) {
+    applyTheme(systemTheme(), false);
+  }
+});
+
+window.addEventListener("hashchange", updateActiveNav);
 
 for (const link of bookmarkletLinks) {
   link.addEventListener("click", (event) => {
