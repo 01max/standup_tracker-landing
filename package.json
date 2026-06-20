@@ -1,0 +1,17 @@
+{
+  "name": "standup-tracker-landing",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "deploy": "wrangler deploy"
+  },
+  "devDependencies": {
+    "html-minifier-terser": "^7.2.0",
+    "lightningcss": "^1.29.1",
+    "sharp": "^0.33.5",
+    "svgo": "^3.3.2",
+    "terser": "^5.36.0",
+    "wrangler": "^4.103.0"
+  }
+}
