@@ -15,11 +15,40 @@ The build step minifies HTML, CSS, and JavaScript, rewrites asset references to
 content-hashed filenames, creates AVIF / WebP / PNG screenshot variants, and
 writes cache headers for immutable static assets.
 
-Run the production build locally with:
+## Local development
+
+Serve the source files locally:
+
+```sh
+bin/dev
+```
+
+The server defaults to `http://127.0.0.1:8787/`. Override the host or port with
+environment variables:
+
+```sh
+PORT=3000 bin/dev
+```
+
+You can also run it through npm:
+
+```sh
+npm run dev
+```
+
+## Production build
+
+Run the production build locally:
 
 ```sh
 npm ci
 npm run build
+```
+
+Preview the compiled `dist/` output:
+
+```sh
+python3 -m http.server 8788 --bind 127.0.0.1 --directory dist
 ```
 
 Local assets:
@@ -28,9 +57,4 @@ Local assets:
 
 The drag-to-install link fetches the generated bookmarklet from
 `https://raw.githubusercontent.com/01max/standup_tracker/main/standup-companion.bookmarklet.js`
-at page load. For local preview, serving the folder over HTTP is closer to the
-Cloudflare Pages runtime than opening `index.html` directly:
-
-```sh
-python3 -m http.server 8787 --bind 127.0.0.1
-```
+at page load.
