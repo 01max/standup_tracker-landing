@@ -1,0 +1,901 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta
+      name="description"
+      content="standup_tracker is a private local Google Meet bookmarklet for tracking who has already spoken during a standup."
+    >
+    <meta name="color-scheme" content="dark light">
+    <meta property="og:title" content="standup_tracker">
+    <meta
+      property="og:description"
+      content="A private local Google Meet bookmarklet for tracking who has already spoken in a standup."
+    >
+    <meta property="og:type" content="website">
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+    <title>standup_tracker</title>
+    <style>
+      :root {
+        --bg: #15120f;
+        --ink: #f0ebe4;
+        --ink-soft: #8a847a;
+        --rule: #2b2622;
+        --rule-soft: #221e1a;
+        --chip-bg: #1f1b17;
+        --accent: #7dd3d0;
+        --accent-weak: color-mix(in srgb, var(--accent) 32%, transparent);
+        --accent-hover: color-mix(in srgb, var(--accent) 45%, transparent);
+        --ink-code-bg: color-mix(in srgb, var(--ink) 8%, transparent);
+        --content-measure: 760px;
+        --radius-chip: 4px;
+        --radius-box: 6px;
+        --transition-fast: 0.12s ease;
+        --font-sans: "Plus Jakarta Sans", Inter, ui-sans-serif, system-ui, sans-serif;
+        --font-mono: "Fira Code", "SFMono-Regular", Consolas, ui-monospace, monospace;
+      }
+
+      [data-theme="light"] {
+        --bg: #faf8f4;
+        --ink: #14110d;
+        --ink-soft: #6b655d;
+        --rule: #d8d2c4;
+        --rule-soft: #efebe2;
+        --chip-bg: #f3eee3;
+        --accent: #0d7373;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        background: var(--bg);
+        color: var(--ink);
+        font-family: var(--font-sans);
+        font-size: 17px;
+        line-height: 1.55;
+      }
+
+      body {
+        min-height: 100vh;
+        margin: 0;
+        background: var(--bg);
+      }
+
+      a {
+        color: inherit;
+        text-decoration: underline;
+        text-decoration-color: color-mix(in srgb, var(--accent) 50%, transparent);
+        text-decoration-thickness: 1px;
+        text-underline-offset: 3px;
+        transition: color var(--transition-fast), text-decoration-color var(--transition-fast);
+      }
+
+      a:hover {
+        text-decoration-color: var(--accent);
+      }
+
+      main a {
+        color: var(--accent);
+      }
+
+      .page {
+        max-width: var(--content-measure);
+        margin: 0 auto;
+        padding: 8rem 1.5rem 2.5rem;
+      }
+
+      .site-header {
+        position: fixed;
+        z-index: 20;
+        top: 0;
+        left: 50%;
+        width: min(calc(var(--content-measure) + 3rem), 100%);
+        transform: translateX(-50%);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 1rem 1.5rem;
+        background: color-mix(in srgb, var(--bg) 92%, transparent);
+        border-bottom: 1px solid var(--rule-soft);
+        backdrop-filter: blur(16px);
+        font-family: var(--font-mono);
+        font-size: 0.8rem;
+      }
+
+      .brand {
+        color: var(--ink);
+        text-decoration: none;
+      }
+
+      .nav {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 0.45rem;
+        color: var(--ink-soft);
+      }
+
+      .nav a {
+        color: var(--ink-soft);
+        text-decoration: none;
+      }
+
+      .nav a:hover,
+      .nav a:focus-visible {
+        color: var(--ink);
+      }
+
+      .nav-separator {
+        color: var(--rule);
+      }
+
+      .theme-toggle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 1.6rem;
+        height: 1.6rem;
+        margin-left: 0.55rem;
+        padding: 0;
+        color: var(--bg);
+        background: var(--accent);
+        border: 1px solid var(--accent);
+        border-radius: 50%;
+        font: inherit;
+        cursor: pointer;
+        transition: color var(--transition-fast), background var(--transition-fast), opacity var(--transition-fast);
+      }
+
+      .theme-toggle:hover {
+        opacity: 0.85;
+      }
+
+      .theme-toggle span {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        line-height: 1;
+        transform: translateY(0.02em);
+      }
+
+      [data-theme="light"] .theme-toggle {
+        color: var(--accent);
+        background: var(--bg);
+      }
+
+      :focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 4px;
+      }
+
+      .hero {
+        margin-bottom: 3rem;
+        scroll-margin-top: 7rem;
+      }
+
+      .eyebrow {
+        margin: 0 0 1rem;
+        font-family: var(--font-mono);
+        font-size: 0.72rem;
+        font-weight: 500;
+        color: var(--accent);
+        text-transform: uppercase;
+      }
+
+      h1,
+      h2,
+      h3 {
+        margin: 0;
+        font-family: var(--font-sans);
+        font-weight: 500;
+        line-height: 1.15;
+        letter-spacing: 0;
+      }
+
+      h1 {
+        max-width: 12ch;
+        font-size: 2.4rem;
+      }
+
+      h2 {
+        font-size: 1.75rem;
+      }
+
+      h3 {
+        font-size: 1.1rem;
+      }
+
+      p {
+        margin: 0;
+      }
+
+      .lede {
+        max-width: 39rem;
+        margin-top: 1.1rem;
+        color: var(--ink);
+        font-size: 1.08rem;
+      }
+
+      .note {
+        max-width: 42rem;
+        margin-top: 1.15rem;
+        color: var(--ink-soft);
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.65rem;
+        margin-top: 1.5rem;
+      }
+
+      .button {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        min-height: 2.25rem;
+        padding: 0.4rem 0.85rem;
+        color: var(--ink);
+        background: var(--chip-bg);
+        border: 1px solid var(--accent-weak);
+        border-radius: var(--radius-chip);
+        font-family: var(--font-mono);
+        font-size: 0.85rem;
+        text-decoration: none;
+        transition: border-color var(--transition-fast), background var(--transition-fast);
+      }
+
+      .button svg {
+        width: 1rem;
+        height: 1rem;
+        flex: 0 0 auto;
+        fill: currentColor;
+      }
+
+      .button:hover,
+      .button:focus-visible {
+        background: color-mix(in srgb, var(--accent) 8%, var(--chip-bg));
+        border-color: var(--accent-hover);
+        text-decoration: none;
+      }
+
+      .facts {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        margin: 2.4rem 0 0;
+        border-top: 1px solid var(--rule);
+        border-bottom: 1px solid var(--rule);
+      }
+
+      .fact {
+        min-width: 0;
+        padding: 0.75rem 0.85rem;
+        border-right: 1px solid var(--rule);
+      }
+
+      .fact:last-child {
+        border-right: 0;
+      }
+
+      .fact dt {
+        margin: 0 0 0.25rem;
+        color: var(--ink-soft);
+        font-family: var(--font-mono);
+        font-size: 0.72rem;
+      }
+
+      .fact dd {
+        margin: 0;
+        color: var(--ink);
+        font-size: 0.95rem;
+      }
+
+      .screenshot {
+        margin: 0 0 3.25rem;
+        padding: 0.7rem;
+        background: var(--rule-soft);
+        border: 1px solid var(--rule);
+        border-radius: var(--radius-box);
+      }
+
+      .screenshot img {
+        display: block;
+        width: 100%;
+        height: auto;
+        border: 1px solid var(--rule);
+        border-radius: 4px;
+      }
+
+      .screenshot figcaption {
+        margin-top: 0.65rem;
+        color: var(--ink-soft);
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+      }
+
+      .section {
+        padding: 2rem 0;
+        border-top: 1px solid var(--rule);
+        scroll-margin-top: 6rem;
+      }
+
+      .section-header {
+        display: grid;
+        grid-template-columns: 10rem 1fr;
+        gap: 1.25rem;
+        align-items: start;
+        margin-bottom: 1.1rem;
+      }
+
+      .section-label {
+        color: var(--accent);
+        font-family: var(--font-mono);
+        font-size: 0.72rem;
+        text-transform: uppercase;
+      }
+
+      .section-body {
+        display: grid;
+        gap: 1rem;
+      }
+
+      .ruled-list {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        border-top: 1px solid var(--rule-soft);
+      }
+
+      .ruled-list li {
+        display: grid;
+        grid-template-columns: 10rem 1fr;
+        gap: 1.25rem;
+        padding: 0.85rem 0;
+        border-bottom: 1px solid var(--rule-soft);
+      }
+
+      .item-label {
+        color: var(--ink-soft);
+        font-family: var(--font-mono);
+        font-size: 0.78rem;
+      }
+
+      .item-copy {
+        color: var(--ink);
+      }
+
+      .steps {
+        margin: 0;
+        padding-left: 1.25rem;
+      }
+
+      .steps li + li {
+        margin-top: 0.45rem;
+      }
+
+      .bookmarklet-panel {
+        display: grid;
+        grid-template-columns: max-content 1fr max-content;
+        gap: 0.8rem;
+        align-items: center;
+        padding: 0.85rem;
+        background: var(--chip-bg);
+        border: 1px solid var(--rule);
+        border-radius: var(--radius-box);
+      }
+
+      .bookmarklet-link {
+        display: inline-flex;
+        align-items: center;
+        min-height: 2.45rem;
+        padding: 0.45rem 0.85rem;
+        color: var(--ink);
+        background: var(--bg);
+        border: 1px solid var(--accent-weak);
+        border-radius: var(--radius-chip);
+        font-family: var(--font-mono);
+        font-size: 0.9rem;
+        text-decoration: none;
+        cursor: grab;
+      }
+
+      .bookmarklet-link:hover,
+      .bookmarklet-link:focus-visible {
+        border-color: var(--accent-hover);
+        text-decoration: none;
+      }
+
+      .bookmarklet-link[aria-disabled="true"] {
+        color: var(--ink-soft);
+        border-color: var(--rule);
+        cursor: wait;
+      }
+
+      .bookmarklet-meta {
+        display: grid;
+        gap: 0.15rem;
+        color: var(--ink-soft);
+        font-family: var(--font-mono);
+        font-size: 0.76rem;
+      }
+
+      .copy-button {
+        min-height: 2.15rem;
+        padding: 0.35rem 0.7rem;
+        color: var(--ink);
+        background: transparent;
+        border: 1px solid var(--accent-weak);
+        border-radius: var(--radius-chip);
+        font-family: var(--font-mono);
+        font-size: 0.78rem;
+        cursor: pointer;
+      }
+
+      .copy-button:hover,
+      .copy-button:focus-visible {
+        border-color: var(--accent-hover);
+      }
+
+      .copy-button:disabled {
+        color: var(--ink-soft);
+        border-color: var(--rule);
+        cursor: wait;
+      }
+
+      code {
+        padding: 0.05rem 0.35rem;
+        color: var(--accent);
+        background: var(--ink-code-bg);
+        border-radius: 3px;
+        font-family: var(--font-mono);
+        font-size: 0.9em;
+      }
+
+      .code-lines {
+        display: grid;
+        gap: 0.35rem;
+        padding: 0.9rem 1rem;
+        overflow-x: auto;
+        color: var(--ink);
+        background: var(--rule-soft);
+        border: 1px solid var(--rule);
+        border-radius: var(--radius-box);
+        font-family: var(--font-mono);
+        font-size: 0.8rem;
+      }
+
+      .code-lines span {
+        overflow-wrap: anywhere;
+      }
+
+      .footer {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 0.75rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--rule);
+        color: var(--ink-soft);
+        font-family: var(--font-mono);
+        font-size: 0.78rem;
+      }
+
+      .footer a {
+        color: var(--ink-soft);
+      }
+
+      .footer a:hover {
+        color: var(--accent);
+      }
+
+      @media (width <= 700px) {
+        .page {
+          padding: 7.25rem 1.25rem 2.5rem;
+        }
+
+        .site-header {
+          align-items: center;
+          width: 100%;
+          padding: 0.85rem 1.25rem;
+        }
+
+        .nav {
+          max-width: 13rem;
+        }
+
+        .theme-toggle {
+          margin-left: 0.25rem;
+        }
+
+        h1 {
+          font-size: 2rem;
+        }
+
+        h2 {
+          font-size: 1.45rem;
+        }
+
+        .facts {
+          grid-template-columns: 1fr 1fr;
+        }
+
+        .fact:nth-child(2) {
+          border-right: 0;
+        }
+
+        .fact:nth-child(-n + 2) {
+          border-bottom: 1px solid var(--rule);
+        }
+
+        .section-header,
+        .ruled-list li {
+          grid-template-columns: 1fr;
+          gap: 0.4rem;
+        }
+
+        .section {
+          padding-block: 1.65rem;
+        }
+
+        .bookmarklet-panel {
+          grid-template-columns: 1fr;
+        }
+
+        .bookmarklet-link,
+        .copy-button {
+          justify-content: center;
+          width: 100%;
+        }
+
+        .screenshot {
+          margin-inline: -0.2rem;
+          padding: 0.45rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <header class="site-header" aria-label="Site header">
+        <a class="brand" href="#top" aria-label="standup_tracker home">standup_tracker</a>
+        <nav class="nav" aria-label="Primary navigation">
+          <a href="#install">install</a>
+          <span class="nav-separator" aria-hidden="true">.</span>
+          <a href="#limits">limits</a>
+          <span class="nav-separator" aria-hidden="true">.</span>
+          <a href="https://github.com/01max/standup_tracker">source</a>
+          <span class="nav-separator" aria-hidden="true">.</span>
+          <button class="theme-toggle" type="button" data-theme-toggle aria-label="Toggle theme" title="Toggle theme">
+            <span data-theme-icon aria-hidden="true">☀</span>
+          </button>
+        </nav>
+      </header>
+
+      <section class="hero" id="top" aria-labelledby="title">
+        <p class="eyebrow">private local bookmarklet</p>
+        <h1 id="title">standup_tracker</h1>
+        <p class="lede">
+          A small Google Meet helper for standups. It adds a compact toolbar to
+          the People panel, lets you mark who has already spoken, and mirrors
+          that state onto matched video tiles.
+        </p>
+        <p class="note">
+          It is still a small toy project: it runs entirely inside the current
+          browser page, does not call a backend, does not send data anywhere,
+          does not write to storage, and does not persist attendance between
+          page refreshes.
+        </p>
+        <div class="actions" aria-label="Project links">
+          <a class="button" href="#install">install</a>
+          <a class="button" href="https://github.com/01max/standup_tracker">
+            <svg viewBox="0 0 16 16" aria-hidden="true">
+              <path d="M8 0C3.58 0 0 3.67 0 8.2c0 3.63 2.29 6.7 5.47 7.79.4.08.55-.18.55-.4 0-.2-.01-.86-.01-1.56-2.01.38-2.53-.5-2.69-.96-.09-.24-.48-.96-.82-1.15-.28-.16-.68-.55-.01-.56.63-.01 1.08.59 1.23.84.72 1.24 1.87.89 2.33.68.07-.53.28-.89.51-1.1-1.78-.21-3.64-.91-3.64-4.04 0-.89.31-1.62.82-2.19-.08-.21-.36-1.04.08-2.16 0 0 .67-.22 2.2.84A7.45 7.45 0 0 1 8 3.96c.68 0 1.36.09 2 .27 1.53-1.06 2.2-.84 2.2-.84.44 1.12.16 1.95.08 2.16.51.57.82 1.3.82 2.19 0 3.14-1.87 3.83-3.65 4.04.29.26.54.76.54 1.53 0 1.1-.01 1.99-.01 2.27 0 .22.15.48.55.4A8.12 8.12 0 0 0 16 8.2C16 3.67 12.42 0 8 0Z"/>
+            </svg>
+            <span>source</span>
+          </a>
+        </div>
+
+        <dl class="facts" aria-label="Project facts">
+          <div class="fact">
+            <dt>scope</dt>
+            <dd>current Meet page</dd>
+          </div>
+          <div class="fact">
+            <dt>storage</dt>
+            <dd>no writes</dd>
+          </div>
+          <div class="fact">
+            <dt>backend</dt>
+            <dd>none</dd>
+          </div>
+          <div class="fact">
+            <dt>audio</dt>
+            <dd>not accessed</dd>
+          </div>
+        </dl>
+      </section>
+
+      <figure class="screenshot">
+        <img
+          src="assets/standup-tracker-ui.png"
+          alt="standup_tracker controls inside the Google Meet People panel"
+          width="704"
+          height="662"
+        >
+        <figcaption>Actual UI shown in the Google Meet People panel.</figcaption>
+      </figure>
+
+      <section class="section" aria-labelledby="does-heading">
+        <div class="section-header">
+          <span class="section-label">what it does</span>
+          <h2 id="does-heading">One checklist for the current standup.</h2>
+        </div>
+        <div class="section-body">
+          <ul class="ruled-list">
+            <li>
+              <span class="item-label">panel</span>
+              <span class="item-copy">Adds a small Standup toolbar after the Google Meet People panel is available.</span>
+            </li>
+            <li>
+              <span class="item-label">count</span>
+              <span class="item-copy">Shows a talked count for the currently visible participants.</span>
+            </li>
+            <li>
+              <span class="item-label">rows</span>
+              <span class="item-copy">Adds a Talked checkbox to each detected participant row.</span>
+            </li>
+            <li>
+              <span class="item-label">tiles</span>
+              <span class="item-copy">Mirrors talked state onto matched video tiles with a small status marker.</span>
+            </li>
+            <li>
+              <span class="item-label">speaking</span>
+              <span class="item-copy">Marks someone as talked after Meet shows them speaking continuously for 3 seconds.</span>
+            </li>
+            <li>
+              <span class="item-label">changes</span>
+              <span class="item-copy">Keeps manual changes reversible: check, uncheck, reset, or rerun the bookmarklet to refresh.</span>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="section" id="install" aria-labelledby="install-heading">
+        <div class="section-header">
+          <span class="section-label">install</span>
+          <h2 id="install-heading">Drag the bookmarklet to your bookmarks bar.</h2>
+        </div>
+        <div class="section-body">
+          <div class="bookmarklet-panel">
+            <a
+              class="bookmarklet-link"
+              href="#"
+              data-bookmarklet-link
+              draggable="true"
+              aria-disabled="true"
+            >standup_tracker</a>
+            <span class="bookmarklet-meta">
+              <span>drag this link to your bookmarks bar</span>
+              <span data-bookmarklet-status>loading bookmarklet</span>
+            </span>
+            <button class="copy-button" type="button" data-copy-bookmarklet disabled>copy URL</button>
+          </div>
+          <ol class="steps">
+            <li>Show your browser bookmarks bar.</li>
+            <li>Drag <code>standup_tracker</code> above into it.</li>
+            <li>Open a Google Meet call and its People panel.</li>
+            <li>Click the bookmark.</li>
+            <li>Watch the toolbar count and video-tile status markers.</li>
+          </ol>
+          <p class="note">
+            If dragging does not work in your browser, use copy URL and paste it
+            into a new bookmark's URL field. Running the bookmarklet again
+            refreshes and focuses the existing controls.
+          </p>
+        </div>
+      </section>
+
+      <section class="section" id="limits" aria-labelledby="limits-heading">
+        <div class="section-header">
+          <span class="section-label">limits</span>
+          <h2 id="limits-heading">It depends on Google Meet internals.</h2>
+        </div>
+        <div class="section-body">
+          <ul class="ruled-list">
+            <li>
+              <span class="item-label">fragile</span>
+              <span class="item-copy">Google can change Meet's DOM, labels, participant rows, or speaking indicators at any time, so the bookmarklet can break without notice.</span>
+            </li>
+            <li>
+              <span class="item-label">not saved</span>
+              <span class="item-copy">Talked/not-talked state is kept in page memory only. Refreshing or leaving the Meet clears the session.</span>
+            </li>
+            <li>
+              <span class="item-label">visible UI</span>
+              <span class="item-copy">Participant discovery is based on the rendered People panel, not an official participant API.</span>
+            </li>
+            <li>
+              <span class="item-label">no audio</span>
+              <span class="item-copy">Speaking detection is inferred from visible Meet UI signals. The bookmarklet does not access audio streams.</span>
+            </li>
+            <li>
+              <span class="item-label">best effort</span>
+              <span class="item-copy">Tile markers appear only when a visible tile can be matched to a known participant.</span>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="section" aria-labelledby="implementation-heading">
+        <div class="section-header">
+          <span class="section-label">how it works</span>
+          <h2 id="implementation-heading">It watches the rendered Meet page.</h2>
+        </div>
+        <div class="section-body">
+          <ul class="ruled-list">
+            <li>
+              <span class="item-label">participants</span>
+              <span class="item-copy">It reads visible role, accessibility, data attribute, title, and row text signals from the People panel.</span>
+            </li>
+            <li>
+              <span class="item-label">speakers</span>
+              <span class="item-copy">It looks for visible speaker classes, speaking data attributes, accessibility labels, titles, and status regions.</span>
+            </li>
+            <li>
+              <span class="item-label">sync</span>
+              <span class="item-copy">A MutationObserver keeps participant rows, tile overlays, and speaker state synchronized as Meet re-renders.</span>
+            </li>
+            <li>
+              <span class="item-label">selectors</span>
+              <span class="item-copy">Selector and name-cleaning logic lives in <code>standup-companion.js</code> because Meet's DOM is not a stable public API.</span>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="section" aria-labelledby="debug-heading">
+        <div class="section-header">
+          <span class="section-label">debug</span>
+          <h2 id="debug-heading">When Meet drifts, inspect the running bookmarklet.</h2>
+        </div>
+        <div class="section-body">
+          <p>
+            The running bookmarklet exposes a small operational API and a set of
+            diagnostics for checking what it can see on the page.
+          </p>
+          <div class="code-lines" aria-label="Debug console commands">
+            <span>window.__meetStandupCompanion.refresh()</span>
+            <span>window.__meetStandupCompanion.focus()</span>
+            <span>window.__meetStandupCompanion.destroy()</span>
+            <span>window.__meetStandupCompanionDebug.snapshot()</span>
+            <span>window.__meetStandupCompanionDebug.logSnapshot()</span>
+            <span>window.__meetStandupCompanionDebug.discover()</span>
+            <span>window.__meetStandupCompanionDebug.panelCandidates()</span>
+            <span>window.__meetStandupCompanionDebug.speakerCandidates()</span>
+            <span>window.__meetStandupCompanionDebug.detectActiveSpeaker()</span>
+            <span>window.__meetStandupCompanionDebug.traceSpeaking(5000)</span>
+          </div>
+        </div>
+      </section>
+
+      <footer class="footer">
+        <span>plain static page for Cloudflare Pages</span>
+        <a href="https://github.com/01max/standup_tracker">github.com/01max/standup_tracker</a>
+      </footer>
+    </main>
+
+    <script>
+      const root = document.documentElement;
+      const themeToggle = document.querySelector("[data-theme-toggle]");
+      const themeIcon = document.querySelector("[data-theme-icon]");
+      const bookmarkletLinks = Array.from(document.querySelectorAll("[data-bookmarklet-link]"));
+      const copyBookmarkletButton = document.querySelector("[data-copy-bookmarklet]");
+      const bookmarkletStatus = document.querySelector("[data-bookmarklet-status]");
+      const storage = {
+        get() {
+          try {
+            return localStorage.getItem("theme");
+          } catch {
+            return null;
+          }
+        },
+        set(value) {
+          try {
+            localStorage.setItem("theme", value);
+          } catch {
+            return undefined;
+          }
+        },
+      };
+      const storedTheme = storage.get();
+      let bookmarkletUrl = "";
+
+      function applyTheme(theme, persist = true) {
+        const nextTheme = theme === "light" ? "light" : "dark";
+        root.dataset.theme = nextTheme;
+        root.style.colorScheme = nextTheme;
+
+        if (themeIcon) {
+          themeIcon.textContent = nextTheme === "dark" ? "☀" : "☾";
+        }
+
+        if (themeToggle) {
+          const nextLabel = nextTheme === "dark" ? "Switch to light theme" : "Switch to dark theme";
+          themeToggle.setAttribute("aria-label", nextLabel);
+          themeToggle.setAttribute("title", nextLabel);
+        }
+
+        if (persist) {
+          storage.set(nextTheme);
+        }
+      }
+
+      function setBookmarkletStatus(message) {
+        if (bookmarkletStatus) {
+          bookmarkletStatus.textContent = message;
+        }
+      }
+
+      async function loadBookmarklet() {
+        try {
+          const response = await fetch("assets/standup-companion.bookmarklet.js");
+          const text = (await response.text()).trim();
+
+          if (!response.ok || !text.startsWith("javascript:")) {
+            throw new Error("Bookmarklet failed to load");
+          }
+
+          bookmarkletUrl = text;
+
+          for (const link of bookmarkletLinks) {
+            link.href = bookmarkletUrl;
+            link.setAttribute("aria-disabled", "false");
+          }
+
+          if (copyBookmarkletButton) {
+            copyBookmarkletButton.disabled = false;
+          }
+
+          setBookmarkletStatus("ready: drag or copy");
+        } catch (_error) {
+          setBookmarkletStatus("bookmarklet URL could not load");
+        }
+      }
+
+      applyTheme(storedTheme, false);
+
+      themeToggle?.addEventListener("click", () => {
+        applyTheme(root.dataset.theme === "dark" ? "light" : "dark");
+      });
+
+      for (const link of bookmarkletLinks) {
+        link.addEventListener("click", (event) => {
+          event.preventDefault();
+          setBookmarkletStatus(bookmarkletUrl ? "drag the link to install it" : "bookmarklet is still loading");
+        });
+      }
+
+      copyBookmarkletButton?.addEventListener("click", async () => {
+        if (!bookmarkletUrl) {
+          setBookmarkletStatus("bookmarklet is still loading");
+          return;
+        }
+
+        try {
+          await navigator.clipboard.writeText(bookmarkletUrl);
+          setBookmarkletStatus("bookmarklet URL copied");
+        } catch (_error) {
+          setBookmarkletStatus("copy failed; drag the link instead");
+        }
+      });
+
+      loadBookmarklet();
+    </script>
+  </body>
+</html>
