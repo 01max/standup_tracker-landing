@@ -1,6 +1,5 @@
 const root = document.documentElement;
 const themeToggle = document.querySelector("[data-theme-toggle]");
-const themeIcon = document.querySelector("[data-theme-icon]");
 const themeQuery = window.matchMedia("(prefers-color-scheme: light)");
 const navLinks = Array.from(document.querySelectorAll(".nav a[href^='#']"));
 const bookmarkletLinks = Array.from(document.querySelectorAll("[data-bookmarklet-link]"));
@@ -34,10 +33,6 @@ function applyTheme(theme, persist = true) {
   const nextTheme = theme === "light" || theme === "dark" ? theme : systemTheme();
   root.dataset.theme = nextTheme;
   root.style.colorScheme = nextTheme;
-
-  if (themeIcon) {
-    themeIcon.textContent = nextTheme === "dark" ? "☀" : "☾";
-  }
 
   if (themeToggle) {
     const nextLabel = nextTheme === "dark" ? "Switch to light theme" : "Switch to dark theme";
