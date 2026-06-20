@@ -11,4 +11,7 @@ Cloudflare Pages settings:
 Local assets:
 
 - `assets/standup-tracker-ui.png` is the current README screenshot.
-- `assets/standup-companion.bookmarklet.js` powers the drag-to-install link.
+
+The drag-to-install link fetches the generated bookmarklet from
+`https://raw.githubusercontent.com/01max/standup_tracker/main/standup-companion.bookmarklet.js`
+at page load.
