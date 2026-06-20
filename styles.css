@@ -313,6 +313,10 @@ p {
   margin-bottom: 1.1rem;
 }
 
+#quick-look .section-header {
+  margin-bottom: 1.75rem;
+}
+
 .section-label {
   color: var(--accent);
   font-family: var(--font-mono);
