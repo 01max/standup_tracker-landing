@@ -199,7 +199,6 @@
       }
 
       h1 {
-        max-width: 12ch;
         font-size: 2.4rem;
       }
 
@@ -579,14 +578,14 @@
 
       <section class="hero" id="top" aria-labelledby="title">
         <p class="eyebrow">private local bookmarklet</p>
-        <h1 id="title">standup_tracker</h1>
+        <h1 id="title">standup_tracker🙋</h1>
         <p class="lede">
-          A small Google Meet helper for standups. It adds a compact toolbar to
-          the People panel, lets you mark who has already spoken, and mirrors
+          A small Google Meet helper for standups adding a compact toolbar to
+          the People panel, automatically detecting who has already spoken, and mirrors
           that state onto matched video tiles.
         </p>
         <p class="note">
-          It is still a small toy project: it runs entirely inside the current
+          <code>standup_tracker</code> is a small toy project and runs entirely inside the current
           browser page, does not call a backend, does not send data anywhere,
           does not write to storage, and does not persist attendance between
           page refreshes.
@@ -604,7 +603,7 @@
         <dl class="facts" aria-label="Project facts">
           <div class="fact">
             <dt>scope</dt>
-            <dd>current Meet page</dd>
+            <dd>current GMeet page</dd>
           </div>
           <div class="fact">
             <dt>storage</dt>
@@ -628,39 +627,39 @@
           width="704"
           height="662"
         >
-        <figcaption>Actual UI shown in the Google Meet People panel.</figcaption>
+        <figcaption>Actual UI shown in the Google Meet People panel</figcaption>
       </figure>
 
       <section class="section" aria-labelledby="does-heading">
         <div class="section-header">
           <span class="section-label">what it does</span>
-          <h2 id="does-heading">One checklist for the current standup.</h2>
+          <h2 id="does-heading">A checklist for your current standup</h2>
         </div>
         <div class="section-body">
           <ul class="ruled-list">
             <li>
               <span class="item-label">panel</span>
-              <span class="item-copy">Adds a small Standup toolbar after the Google Meet People panel is available.</span>
+              <span class="item-copy">Adds a small Standup toolbar on top of the Google Meet People panel</span>
             </li>
             <li>
               <span class="item-label">count</span>
-              <span class="item-copy">Shows a talked count for the currently visible participants.</span>
+              <span class="item-copy">Shows a talked count for the currently visible participants</span>
             </li>
             <li>
               <span class="item-label">rows</span>
-              <span class="item-copy">Adds a Talked checkbox to each detected participant row.</span>
+              <span class="item-copy">Adds a Talked checkbox to each detected participant</span>
             </li>
             <li>
               <span class="item-label">tiles</span>
-              <span class="item-copy">Mirrors talked state onto matched video tiles with a small status marker.</span>
+              <span class="item-copy">Mirrors talked state onto matched video tiles with a small status marker</span>
             </li>
             <li>
               <span class="item-label">speaking</span>
-              <span class="item-copy">Marks someone as talked after Meet shows them speaking continuously for 3 seconds.</span>
+              <span class="item-copy">Marks someone as talked after Meet shows them speaking continuously for 3 seconds</span>
             </li>
             <li>
               <span class="item-label">changes</span>
-              <span class="item-copy">Keeps manual changes reversible: check, uncheck, reset, or rerun the bookmarklet to refresh.</span>
+              <span class="item-copy">Keeps manual changes reversible : check, uncheck, reset, or rerun the bookmarklet to refresh</span>
             </li>
           </ul>
         </div>
@@ -669,7 +668,7 @@
       <section class="section" id="install" aria-labelledby="install-heading">
         <div class="section-header">
           <span class="section-label">install</span>
-          <h2 id="install-heading">Drag the bookmarklet to your bookmarks bar.</h2>
+          <h2 id="install-heading">Drag the bookmarklet to your bookmarks bar</h2>
         </div>
         <div class="section-body">
           <div class="bookmarklet-panel">
@@ -704,29 +703,29 @@
       <section class="section" id="limits" aria-labelledby="limits-heading">
         <div class="section-header">
           <span class="section-label">limits</span>
-          <h2 id="limits-heading">It depends on Google Meet internals.</h2>
+          <h2 id="limits-heading">It relies on Google Meet internals</h2>
         </div>
         <div class="section-body">
           <ul class="ruled-list">
             <li>
               <span class="item-label">fragile</span>
-              <span class="item-copy">Google can change Meet's DOM, labels, participant rows, or speaking indicators at any time, so the bookmarklet can break without notice.</span>
+              <span class="item-copy">Google can change Meet's DOM, labels, participant rows, or speaking indicators at any time, so the bookmarklet can break without notice</span>
             </li>
             <li>
               <span class="item-label">not saved</span>
-              <span class="item-copy">Talked/not-talked state is kept in page memory only. Refreshing or leaving the Meet clears the session.</span>
+              <span class="item-copy">Talked / not-talked state is kept in page memory only. Refreshing or leaving the Meet clears the session</span>
             </li>
             <li>
               <span class="item-label">visible UI</span>
-              <span class="item-copy">Participant discovery is based on the rendered People panel, not an official participant API.</span>
+              <span class="item-copy">Participant discovery is based on the rendered People panel, not an official participant API</span>
             </li>
             <li>
               <span class="item-label">no audio</span>
-              <span class="item-copy">Speaking detection is inferred from visible Meet UI signals. The bookmarklet does not access audio streams.</span>
+              <span class="item-copy">Speaking detection is inferred from visible Meet UI signals. The bookmarklet does not access audio streams</span>
             </li>
             <li>
               <span class="item-label">best effort</span>
-              <span class="item-copy">Tile markers appear only when a visible tile can be matched to a known participant.</span>
+              <span class="item-copy">Tile markers appear only when a visible tile can be matched to a known participant</span>
             </li>
           </ul>
         </div>
@@ -741,19 +740,19 @@
           <ul class="ruled-list">
             <li>
               <span class="item-label">participants</span>
-              <span class="item-copy">It reads visible role, accessibility, data attribute, title, and row text signals from the People panel.</span>
+              <span class="item-copy">It reads visible role, accessibility, data attribute, title, and row text signals from the People panel</span>
             </li>
             <li>
               <span class="item-label">speakers</span>
-              <span class="item-copy">It looks for visible speaker classes, speaking data attributes, accessibility labels, titles, and status regions.</span>
+              <span class="item-copy">It looks for visible speaker classes, speaking data attributes, accessibility labels, titles, and status regions</span>
             </li>
             <li>
               <span class="item-label">sync</span>
-              <span class="item-copy">A MutationObserver keeps participant rows, tile overlays, and speaker state synchronized as Meet re-renders.</span>
+              <span class="item-copy">A MutationObserver keeps participant rows, tile overlays, and speaker state synchronized as Meet re-renders</span>
             </li>
             <li>
               <span class="item-label">selectors</span>
-              <span class="item-copy">Selector and name-cleaning logic lives in <code>standup-companion.js</code> because Meet's DOM is not a stable public API.</span>
+              <span class="item-copy">Selector and name-cleaning logic lives in <code>standup-companion.js</code> because Meet's DOM is not a stable public API</span>
             </li>
           </ul>
         </div>
@@ -762,7 +761,7 @@
       <section class="section" aria-labelledby="debug-heading">
         <div class="section-header">
           <span class="section-label">debug</span>
-          <h2 id="debug-heading">When Meet drifts, inspect the running bookmarklet.</h2>
+          <h2 id="debug-heading">When Meet drifts, inspect the running bookmarklet</h2>
         </div>
         <div class="section-body">
           <p>
