@@ -2,11 +2,14 @@
 
 Small static landing page for [`01max/standup_tracker`](https://github.com/01max/standup_tracker).
 
-Cloudflare Pages settings:
+Cloudflare Workers & Pages settings:
 
 - Framework preset: none
-- Build command: `exit 0`
-- Build output directory: `.`
+- Build command: `mkdir -p dist && cp -R index.html styles.css script.js assets dist/`
+- Deploy command: `npx wrangler deploy`
+
+The `wrangler.toml` file configures the `standup-tracker-landing` Worker and
+serves `dist/` as static assets.
 
 Local assets:
 
