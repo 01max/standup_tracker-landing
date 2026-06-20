@@ -503,6 +503,38 @@ code {
   overflow-wrap: anywhere;
 }
 
+.code-line {
+  display: block;
+}
+
+.syntax-global {
+  color: var(--ink-soft);
+}
+
+.syntax-object {
+  color: var(--accent);
+}
+
+.syntax-method {
+  color: #f0b56a;
+}
+
+.syntax-number {
+  color: #98c379;
+}
+
+.syntax-punctuation {
+  color: color-mix(in srgb, var(--ink-soft) 72%, var(--ink));
+}
+
+[data-theme="light"] .syntax-method {
+  color: #a45f00;
+}
+
+[data-theme="light"] .syntax-number {
+  color: #3e7a22;
+}
+
 .footer {
   display: flex;
   flex-wrap: wrap;
