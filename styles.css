@@ -351,12 +351,57 @@ p {
 }
 
 .steps {
+  counter-reset: install-step;
+  display: grid;
+  gap: 0.2rem;
   margin: 0;
-  padding-left: 1.25rem;
+  padding: 0;
+  list-style: none;
 }
 
-.steps li + li {
-  margin-top: 0.45rem;
+.steps li {
+  counter-increment: install-step;
+  position: relative;
+  display: grid;
+  grid-template-columns: 1.7rem 1rem 1fr;
+  gap: 0.35rem;
+  align-items: baseline;
+  min-width: 0;
+  padding: 0.05rem 0;
+  color: var(--ink);
+}
+
+.steps li::before {
+  content: counter(install-step, decimal-leading-zero);
+  display: inline-block;
+  color: var(--ink-soft);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  line-height: 1;
+}
+
+.step-graph {
+  position: relative;
+  min-width: 1ch;
+  font-family: var(--font-mono);
+  line-height: 1;
+}
+
+.step-node {
+  color: var(--accent);
+  font-size: 0.95rem;
+}
+
+.step-pipe {
+  position: absolute;
+  top: 1.12rem;
+  left: 0;
+  color: var(--rule);
+  font-size: 0.72rem;
+}
+
+.step-copy {
+  min-width: 0;
 }
 
 .bookmarklet-panel {

@@ -44,9 +44,9 @@
           that state onto matched video tiles.
         </p>
         <p class="note">
-          <code>standup_tracker</code> is a small toy project and runs entirely inside the current
-          browser page, does not call a backend, does not send data anywhere,
-          does not write to storage, and does not persist attendance between
+          <code>standup_tracker</code> is a small js script that runs entirely inside the current
+          page, does not call a server, does not access audio, does not send data anywhere,
+          does not even write to storage, and does not persist attendance between
           page refreshes.
         </p>
         <div class="actions" aria-label="Project links">
@@ -63,25 +63,6 @@
             <span>source</span>
           </a>
         </div>
-
-        <dl class="facts" aria-label="Project facts">
-          <div class="fact">
-            <dt>scope</dt>
-            <dd>current GMeet page</dd>
-          </div>
-          <div class="fact">
-            <dt>storage</dt>
-            <dd>no writes</dd>
-          </div>
-          <div class="fact">
-            <dt>backend</dt>
-            <dd>none</dd>
-          </div>
-          <div class="fact">
-            <dt>audio</dt>
-            <dd>not accessed</dd>
-          </div>
-        </dl>
       </section>
 
       <figure class="screenshot">
@@ -157,11 +138,40 @@
             <button class="copy-button" type="button" data-copy-bookmarklet disabled>copy URL</button>
           </div>
           <ol class="steps">
-            <li>Show your browser bookmarks bar.</li>
-            <li>Drag <code>standup_tracker</code> above into it.</li>
-            <li>Open a Google Meet call and its People panel.</li>
-            <li>Click the bookmark.</li>
-            <li>Watch the toolbar count and video-tile status markers.</li>
+            <li>
+              <span class="step-graph" aria-hidden="true">
+                <span class="step-node">*</span>
+                <span class="step-pipe">|</span>
+              </span>
+              <span class="step-copy">Show your browser bookmarks bar.</span>
+            </li>
+            <li>
+              <span class="step-graph" aria-hidden="true">
+                <span class="step-node">*</span>
+                <span class="step-pipe">|</span>
+              </span>
+              <span class="step-copy">Drag the bookmarklet above into it.</span>
+            </li>
+            <li>
+              <span class="step-graph" aria-hidden="true">
+                <span class="step-node">*</span>
+                <span class="step-pipe">|</span>
+              </span>
+              <span class="step-copy">Open a Google Meet call and its People panel.</span>
+            </li>
+            <li>
+              <span class="step-graph" aria-hidden="true">
+                <span class="step-node">*</span>
+                <span class="step-pipe">|</span>
+              </span>
+              <span class="step-copy">Click the bookmark.</span>
+            </li>
+            <li>
+              <span class="step-graph" aria-hidden="true">
+                <span class="step-node">*</span>
+              </span>
+              <span class="step-copy">Watch the toolbar count and video-tile status markers.</span>
+            </li>
           </ol>
           <p class="note">
             If dragging does not work in your browser, use copy URL and paste it
