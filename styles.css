@@ -6,6 +6,7 @@
   --rule-soft: #221e1a;
   --chip-bg: #1f1b17;
   --accent: #7dd3d0;
+  --accent-ink: #15120f;
   --accent-weak: color-mix(in srgb, var(--accent) 32%, transparent);
   --accent-hover: color-mix(in srgb, var(--accent) 45%, transparent);
   --ink-code-bg: color-mix(in srgb, var(--ink) 8%, transparent);
@@ -25,6 +26,7 @@
   --rule-soft: #efebe2;
   --chip-bg: #f3eee3;
   --accent: #0d7373;
+  --accent-ink: #faf8f4;
 }
 
 * {
@@ -419,30 +421,36 @@ p {
   border-radius: var(--radius-box);
 }
 
-.bookmarklet-link {
+main .bookmarklet-link {
   display: inline-flex;
   align-items: center;
   min-height: 2.45rem;
   padding: 0.45rem 0.85rem;
-  color: var(--ink);
-  background: var(--bg);
-  border: 1px solid var(--accent-weak);
+  color: var(--accent-ink);
+  background: var(--accent);
+  border: 1px solid var(--accent);
   border-radius: var(--radius-chip);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 16%, transparent);
   font-family: var(--font-mono);
   font-size: 0.9rem;
+  font-weight: 600;
   text-decoration: none;
   cursor: grab;
 }
 
-.bookmarklet-link:hover,
-.bookmarklet-link:focus-visible {
-  border-color: var(--accent-hover);
+main .bookmarklet-link:hover,
+main .bookmarklet-link:focus-visible {
+  background: color-mix(in srgb, var(--accent) 86%, var(--ink) 14%);
+  border-color: var(--accent);
   text-decoration: none;
 }
 
-.bookmarklet-link[aria-disabled="true"] {
+main .bookmarklet-link[aria-disabled="true"] {
   color: var(--ink-soft);
+  background: var(--bg);
   border-color: var(--rule);
+  box-shadow: none;
+  font-weight: 400;
   cursor: wait;
 }
 
